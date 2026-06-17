@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pong Rehab Game</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #1a1a2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        #pong {
+            border: 2px solid #ffffff33;
+            display: block;
+        }
+
+        #controls {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        #connectBtn {
+            padding: 8px 20px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #connectBtn:hover { background: #c73652; }
+
+        #statusText {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        #rehabPanel {
+            margin-top: 12px;
+            display: flex;
+            gap: 24px;
+        }
+
+        .stat-box {
+            background: #16213e;
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e94560;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="pong" width="600" height="400"></canvas>
+
+    <div id="controls">
+        <button id="connectBtn" onclick="connectSerial()">Connect Arduino</button>
+        <span id="statusText">Not connected — using mouse</span>
+    </div>
+
+    <div id="rehabPanel">
+        <div class="stat-box">
+            <div class="stat-label">Reps</div>
+            <div class="stat-value" id="statReps">0</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Peak Angle</div>
+            <div class="stat-value" id="statPeak">0°</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Current Angle</div>
+            <div class="stat-value" id="statAngle">0°</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Session Time</div>
+            <div class="stat-value" id="statTime">00:00</div>
+        </div>
+    </div>
+
+    <script src="pong.js"></script>
+</body>
+</html>
