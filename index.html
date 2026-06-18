@@ -39,6 +39,16 @@
         }
 
         #connectBtn:hover { background: #c73652; }
+        #btBtn{
+            padding: 8px 20px;
+            background: #0f3460;
+            color: white;
+            border: none;
+            border-radius: 6px ;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        #btBtn: hover{background: #1a5276;}
 
         #statusText {
             color: #aaa;
@@ -79,8 +89,9 @@
     <canvas id="pong" width="600" height="400"></canvas>
 
     <div id="controls">
-        <button id="connectBtn" onclick="connectSerial()">Connect Arduino</button>
-        <span id="statusText">Not connected — using mouse</span>
+        <button id="connectBtn" onclick="connectSerial()">Connect USB</button>
+        <button id="btBtn" onclick="connectBluetooth()">Connect Bluetooth </button>
+        <span id="statusText">Not connected </span>
     </div>
 
     <div id="rehabPanel">
