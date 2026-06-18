@@ -64,6 +64,7 @@ let currentAngle  = 0;
 let peakAngle     = 0;
 let repCount      = 0;
 let serialConnected = false;
+let gameStarted =false;
 
 const REP_UP_THRESHOLD   = 120;   // arm must reach this (degrees)
 const REP_DOWN_THRESHOLD = 30;    // arm must return below this
@@ -89,6 +90,7 @@ async function connectSerial() {
         statusText.textContent  = "Connected ✓";
         statusText.style.color  = "#4caf50";
         serialConnected         = true;
+        gameStarted = true;
 
         const decoder = new TextDecoderStream();
         port.readable.pipeTo(decoder.writable);
@@ -117,7 +119,49 @@ async function connectSerial() {
         statusText.style.color = "#e94560";
     }
 }
+//BLUETOOTH CONNECTION----------------------------
+async function connectBluetooth() {
+    const SERVICE_UUID        = "12345678-1234-1234-1234-123456789abc";
+    const CHARACTERISTIC_UUID = "abcdefab-cdef-abcd-efcd-abcdefabcdef";
 
+    try {
+        statusText.textContent = "Scanning...";
+        statusText.style.color = "#aaa";
+
+        const device = await navigator.bluetooth.requestDevice({
+            filters: [{ name: "RehabPong" }],
+            optionalServices: [SERVICE_UUID]
+        });
+
+        statusText.textContent = "Connecting...";
+
+        const server         = await device.gatt.connect();
+        const service        = await server.getPrimaryService(SERVICE_UUID);
+        const characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+        await characteristic.startNotifications();
+
+        characteristic.addEventListener("characteristicvaluechanged", (event) => {
+            const angle = event.target.value.getInt32(0, true);
+            updatePaddleFromAngle(angle);
+        });
+
+        statusText.textContent = "Bluetooth Connected ✓";
+        statusText.style.color = "#4caf50";
+        serialConnected        = true;
+        gameStarted            = true;
+
+        device.addEventListener("gattserverdisconnected", () => {
+            statusText.textContent = "Bluetooth disconnected";
+            statusText.style.color = "#e94560";
+            gameStarted            = false;
+        });
+
+    } catch (err) {
+        statusText.textContent = "BT Error: " + err.message;
+        statusText.style.color = "#e94560";
+    }
+}
 // ============================================================
 //  ANGLE → PADDLE MAPPING
 //  0°   = arm at side  → paddle at BOTTOM
@@ -154,15 +198,6 @@ function updatePaddleFromAngle(angle) {
         statReps.textContent = repCount;
     }
 }
-
-// ============================================================
-//  MOUSE FALLBACK (works when serial not connected)
-// ============================================================
-canvas.addEventListener("mousemove", (evt) => {
-    if (serialConnected) return;    // ignore mouse if Arduino connected
-    const rect = canvas.getBoundingClientRect();
-    user.y = evt.clientY - rect.top - user.height / 2;
-});
 
 // ============================================================
 //  DRAW HELPERS
@@ -301,6 +336,23 @@ function render() {
 //  GAME LOOP
 // ============================================================
 function game() {
+
+    if (!gameStarted) {
+
+        drawRect(0, 0, canvas.width, canvas.height, "#1a1a2e");
+
+        ctx.fillStyle = "white";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(
+            "Connect Arduino to Start",
+            canvas.width / 2,
+            canvas.height / 2
+        );
+
+        return;
+    }
+
     update();
     render();
 }
